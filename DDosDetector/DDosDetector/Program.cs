@@ -63,7 +63,7 @@ namespace DDosDetector
                 {
                     DataForFuzzy dataForFuzzy = new DataForFuzzy();
                     dataForFuzzy.jlhData = icmpDataList.Where(x => x.time == time && x.destination.ToUpper() == destination.ToUpper()).ToList().Count;
-                    dataForFuzzy.jlhSource = icmpDataList.Where(x => x.time == time && x.destination.ToUpper() == destination.ToUpper()).Select(y => y.source).ToList().Count;
+                    dataForFuzzy.jlhSource = icmpDataList.Where(x => x.time == time && x.destination.ToUpper() == destination.ToUpper()).Select(y => y.source).Distinct().ToList().Count;
                     dataForFuzzy.jlhLength = icmpDataList.Where(x => x.time == time && x.destination.ToUpper() == destination.ToUpper()).Select(y => y.length).ToList().Sum();
 
                     decimal nilaiPrediksi = DDosDetectorUsingFuzzyLogic(dataForFuzzy);
