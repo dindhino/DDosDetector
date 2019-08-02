@@ -47,8 +47,8 @@ namespace DDosDetector
 
         static void Main(string[] args)
         {
-            string filePath = "../../Dataset/normal.csv";
-            //string filePath = "../../Dataset/data_ddos.csv";
+            //string filePath = "../../Dataset/normal.csv";
+            string filePath = "../../Dataset/data_ddos.csv";
 
             List<DataInFile> dataInFileList = File.ReadAllLines(filePath).Skip(1).Select(v => DataInFile.FromCsv(v)).ToList();
 
@@ -75,26 +75,28 @@ namespace DDosDetector
                     dataForFuzzy.jlhSource = dataSource.Count;
                     dataForFuzzy.jlhLength = icmpDataList.Where(x => x.time == time && x.destination.ToUpper() == destination.ToUpper()).Select(y => y.length).ToList().Sum();
 
-                    decimal nilaiPrediksi = DDosDetectorUsingFuzzyLogic(dataForFuzzy);
+                    if (dataForFuzzy.jlhSource > 0)
+                    {
+                        decimal nilaiPrediksi = DDosDetectorUsingFuzzyLogic(dataForFuzzy);
 
-                    //thresholding
-                    dataPrediksi = new List<string>();
-                    dataPrediksi.Add(time.ToString());
-                    dataPrediksi.Add(String.Join("; ", dataSource));
-                    dataPrediksi.Add(destination.ToString());
-                    dataPrediksi.Add(dataForFuzzy.jlhLength.ToString());
-                    if (nilaiPrediksi > (decimal)0.4)
-                        dataPrediksi.Add("1");
-                    else
-                        dataPrediksi.Add("0");
-
-                    hasilPrediksi.Add(dataPrediksi);
+                        //thresholding
+                        dataPrediksi = new List<string>();
+                        dataPrediksi.Add(time.ToString());
+                        dataPrediksi.Add(String.Join("; ", dataSource));
+                        dataPrediksi.Add(destination.ToString());
+                        dataPrediksi.Add(dataForFuzzy.jlhLength.ToString());
+                        if (nilaiPrediksi > (decimal)0.4)
+                            dataPrediksi.Add("1");
+                        else
+                            dataPrediksi.Add("0");
+                        hasilPrediksi.Add(dataPrediksi);
+                    }
                 }
             }
 
             //Save hasil prediksi ke file
-            File.WriteAllLines("../../Dataset/Prediksi/hasilPrediksi_normal.csv", hasilPrediksi.Select(x => string.Join(",", x)));
-            //File.WriteAllLines("../../Dataset/Prediksi/hasilPrediksi_data_ddos.csv", hasilPrediksi.Select(x => string.Join(",", x)));
+            //File.WriteAllLines("../../Dataset/Prediksi/hasilPrediksi_normal.csv", hasilPrediksi.Select(x => string.Join(",", x)));
+            File.WriteAllLines("../../Dataset/Prediksi/hasilPrediksi_data_ddos.csv", hasilPrediksi.Select(x => string.Join(",", x)));
         }
 
         private static decimal DDosDetectorUsingFuzzyLogic(DataForFuzzy dataForFuzzy)
