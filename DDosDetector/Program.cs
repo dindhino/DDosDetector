@@ -61,6 +61,7 @@ namespace DDosDetector
             dataPrediksi.Add("Time");
             dataPrediksi.Add("Source");
             dataPrediksi.Add("Destination");
+            dataPrediksi.Add("Besar paket");
             dataPrediksi.Add("Hasil Prediksi");
             hasilPrediksi.Add(dataPrediksi);
 
@@ -81,6 +82,7 @@ namespace DDosDetector
                     dataPrediksi.Add(time.ToString());
                     dataPrediksi.Add(String.Join(", ", dataSource));
                     dataPrediksi.Add(destination.ToString());
+                    dataPrediksi.Add(dataForFuzzy.jlhLength.ToString());
                     if (nilaiPrediksi > (decimal)0.4)
                         dataPrediksi.Add("1");
                     else
