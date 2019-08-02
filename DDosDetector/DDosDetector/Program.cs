@@ -57,21 +57,32 @@ namespace DDosDetector
             List<decimal> timeList = icmpDataList.Select(x => x.time).Distinct().ToList();
 
             List<List<string>> hasilPrediksi = new List<List<string>>();
-            foreach(decimal time in timeList)
+            List<string> dataPrediksi = new List<string>();
+            dataPrediksi.Add("Time");
+            dataPrediksi.Add("Source");
+            dataPrediksi.Add("Destination");
+            dataPrediksi.Add("Banyak paket");
+            dataPrediksi.Add("Hasil Prediksi");
+            hasilPrediksi.Add(dataPrediksi);
+
+            foreach (decimal time in timeList)
             {
                 foreach (string destination in destinationList)
                 {
                     DataForFuzzy dataForFuzzy = new DataForFuzzy();
                     dataForFuzzy.jlhData = icmpDataList.Where(x => x.time == time && x.destination.ToUpper() == destination.ToUpper()).ToList().Count;
-                    dataForFuzzy.jlhSource = icmpDataList.Where(x => x.time == time && x.destination.ToUpper() == destination.ToUpper()).Select(y => y.source).Distinct().ToList().Count;
+                    List<string> dataSource = icmpDataList.Where(x => x.time == time && x.destination.ToUpper() == destination.ToUpper()).Select(y => y.source).ToList();
+                    dataForFuzzy.jlhSource = dataSource.Count;
                     dataForFuzzy.jlhLength = icmpDataList.Where(x => x.time == time && x.destination.ToUpper() == destination.ToUpper()).Select(y => y.length).ToList().Sum();
 
                     decimal nilaiPrediksi = DDosDetectorUsingFuzzyLogic(dataForFuzzy);
 
                     //thresholding
-                    List<string> dataPrediksi = new List<string>();
+                    dataPrediksi = new List<string>();
                     dataPrediksi.Add(time.ToString());
+                    dataPrediksi.Add(String.Join("; ", dataSource));
                     dataPrediksi.Add(destination.ToString());
+                    dataPrediksi.Add(dataForFuzzy.jlhLength.ToString());
                     if (nilaiPrediksi > (decimal)0.4)
                         dataPrediksi.Add("1");
                     else
